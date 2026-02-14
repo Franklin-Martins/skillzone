@@ -31,10 +31,10 @@ Docker & Docker Compose
 
 A aplicação roda 100% containerizada, sem necessidade de instalação local do .NET SDK.
 
-Subir containers
+**Subir containers**
 
-docker compose up -d --build
+`docker compose up -d --build`
 
-Aplicar migrations
+**Aplicar migrations**
 
-docker exec -it skillzone-api dotnet ef database update
+`docker exec -it skillzone-api dotnet ef database update`
