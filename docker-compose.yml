@@ -8,6 +8,8 @@ services:
       - "5001:8080"
     networks:
       - skillzone-network
+    volumes:
+      - ./src:/app
     depends_on:
       - db
     environment:
