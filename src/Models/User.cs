@@ -11,5 +11,5 @@ public class User
     public DateTime? LastLoginAt { get; set; }
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
-    public IList<UserMembership> Memberships { get; set; } = new List<UserMembership>();
+    public IList<Subscription> Memberships { get; set; } = new List<Subscription>();
 }
