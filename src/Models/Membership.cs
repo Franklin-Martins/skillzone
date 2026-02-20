@@ -11,5 +11,6 @@ public class Membership
     public DateTime? UpdatedAt { get; private set; }
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
-    public IList<Subscription> Users { get; set; } = new List<Subscription>();
+    public IList<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+    public IList<MembershipContent> Contents { get; set; } = new List<MembershipContent>();
 }
