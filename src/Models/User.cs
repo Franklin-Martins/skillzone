@@ -6,10 +6,11 @@ public class User
     public required string Name { get; set; }
     public required string Email { get; set; }
     public required string PasswordHash { get; set; }
-    public required string Slug { get; set; }
-    public bool IsActive { get; set; } = false;
+    public required string Slug { get; private set; }
+    public bool IsActive { get; private set; } = true;
     public DateTime? LastLoginAt { get; set; }
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
-    public IList<Subscription> Memberships { get; set; } = new List<Subscription>();
+    public IList<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+    public IList<Content> Contents { get; set; } = new List<Content>();
 }
