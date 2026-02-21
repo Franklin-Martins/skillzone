@@ -15,4 +15,6 @@ public class Content
     public int ContentTypeId { get; set; }
 
     public IList<MembershipContent> Memberships { get; set; } = new List<MembershipContent>();
+
+    public IList<ContentCategory> Categories { get; set; } = new List<ContentCategory>();
 }
