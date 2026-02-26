@@ -16,27 +16,27 @@ namespace Api.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly AppDbContext _context;
-    private readonly PasswordHasher<User> _passwordHasher;
+    private readonly IPasswordHasher<User> _passwordHasher = new PasswordHasher<User>();
 
     public UsersController(
-        AppDbContext context,
-        IPasswordHasher<User> passwordHasher)
+        AppDbContext context
+        )
     {
         _context = context;
-        _passwordHasher = passwordHasher;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAsync(
-        [FromQuery] int page = page < 0 ? 0 : page,
-        [FromQuery] int pageSize = pageSize > 25 ? 25 : pageSize
-    )
+        [FromQuery] int page = 0,
+        [FromQuery] int pageSize = 25)
     {
         if (page < 0)
             page = 0;
-            
+
         if (pageSize <= 0 || pageSize > 25)
             pageSize = 25;
+
+        var total = await _context.Users.CountAsync();
 
         var users = await _context.Users
             .AsNoTracking()
@@ -51,13 +51,17 @@ public class UsersController : ControllerBase
             .Take(pageSize)
             .ToListAsync();
 
-        return Ok(new ResultViewModel<List<ListUsersViewModel>>(users, null));
+        return Ok(new ResultViewModel<PagedResultViewModel<ListUsersViewModel>>(
+            new PagedResultViewModel<ListUsersViewModel>(
+                users,
+                page,
+                pageSize,
+                total
+            ), null));
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetByIdAsync(
-        [FromRoute] Guid id
-    )
+    public async Task<IActionResult> GetByIdAsync([FromRoute] Guid id)
     {
         var user = await _context.Users
             .AsNoTracking()
@@ -78,8 +82,7 @@ public class UsersController : ControllerBase
 
     [HttpPost]
     public async Task<IActionResult> CreateAsync(
-        [FromBody] CreateUserViewModel model
-    )
+        [FromBody] CreateUserViewModel model)
     {
         if (!ModelState.IsValid)
             return BadRequest(new ResultViewModel<List<string>>(ModelState.GetErrors()));
@@ -89,32 +92,33 @@ public class UsersController : ControllerBase
 
         var user = new User
         {
+            Id = Guid.NewGuid(),
             Name = model.Name,
             Email = model.Email,
-            PasswordHash = _passwordHasher.HashPassword(user, model.Password),
-            Slug = $"{SlugHelper.Slugify(model.Name)}-{Guid.NewGuid()}"
+            Slug = $"{SlugHelper.Slugify(model.Name)}-{Guid.NewGuid()}",
         };
+
+        user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
 
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
         return Created($"api/users/{user.Id}",
-            new ResultViewModel<string>("Usuário criado com sucesso!", null));
+            new ResultViewModel<string>("Usuário criado com sucesso!"));
     }
 
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> UpdateAsync(
-        [FromBody] UpdateUserViewModel model,
-        [FromRoute] Guid id
-    )
+        [FromRoute] Guid id,
+        [FromBody] UpdateUserViewModel model)
     {
         if (!ModelState.IsValid)
             return BadRequest(new ResultViewModel<List<string>>(ModelState.GetErrors()));
-        
+
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
 
         if (user == null)
-            return NotFound();
+            return NotFound(new ResultViewModel<string>("User not found"));
 
         if (model.Name != null)
         {
@@ -124,24 +128,25 @@ public class UsersController : ControllerBase
 
         if (model.Email != null)
             user.Email = model.Email;
-        
+
         if (model.Password != null)
             user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
 
         await _context.SaveChangesAsync();
+
         return NoContent();
     }
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteAsync(
-        [FromRoute] Guid id
-    )
+    public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
     {
-        var rowAffected = await _context.Users
+        var rows = await _context.Users
             .Where(x => x.Id == id)
             .ExecuteDeleteAsync();
 
-        return rowAffected == 1 ? NoContent() : NotFound();
+        return rows == 1
+            ? NoContent()
+            : NotFound(new ResultViewModel<string>("User not found"));
     }
 
     private async Task<User?> GetUserByEmail(string email)
