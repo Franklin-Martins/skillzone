@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace app.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260221150629_AddContentTypeAndModifyRelationConent")]
-    partial class AddContentTypeAndModifyRelationConent
+    [Migration("20260225031954_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,15 +43,22 @@ namespace app.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsOwner")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Tags")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
@@ -70,6 +77,9 @@ namespace app.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -78,12 +88,48 @@ namespace app.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.ToTable("ContentTypes");
                 });
 
-            modelBuilder.Entity("Api.Models.Membership", b =>
+            modelBuilder.Entity("Api.Models.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("PaidAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("PlanId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlanId");
+
+                    b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("Api.Models.Plan", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -95,12 +141,19 @@ namespace app.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("DurationInMonths")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("IsActive")
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsOwner")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
@@ -110,79 +163,27 @@ namespace app.Migrations
                     b.Property<int>("Price")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Memberships");
-                });
-
-            modelBuilder.Entity("Api.Models.MembershipContent", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ContentId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MembershipId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ContentId");
-
-                    b.HasIndex("MembershipId");
-
-                    b.ToTable("MembershipContents");
-                });
-
-            modelBuilder.Entity("Api.Models.Subscription", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("DueDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("MembershipId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MembershipId");
-
                     b.HasIndex("UserId");
 
-                    b.ToTable("Subscriptions");
+                    b.ToTable("Plans");
                 });
 
             modelBuilder.Entity("Api.Models.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -214,32 +215,6 @@ namespace app.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Api.Models.UserContentProgress", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("CompletedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("ContentId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ContentId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserContentProgresses");
-                });
-
             modelBuilder.Entity("Api.Models.Content", b =>
                 {
                     b.HasOne("Api.Models.ContentType", "ContentType")
@@ -259,66 +234,26 @@ namespace app.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Api.Models.MembershipContent", b =>
+            modelBuilder.Entity("Api.Models.Payment", b =>
                 {
-                    b.HasOne("Api.Models.Content", "Content")
-                        .WithMany("Memberships")
-                        .HasForeignKey("ContentId")
+                    b.HasOne("Api.Models.Plan", "Plan")
+                        .WithMany()
+                        .HasForeignKey("PlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Api.Models.Membership", "Membership")
-                        .WithMany("Contents")
-                        .HasForeignKey("MembershipId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Content");
-
-                    b.Navigation("Membership");
+                    b.Navigation("Plan");
                 });
 
-            modelBuilder.Entity("Api.Models.Subscription", b =>
+            modelBuilder.Entity("Api.Models.Plan", b =>
                 {
-                    b.HasOne("Api.Models.Membership", "Membership")
-                        .WithMany("Subscriptions")
-                        .HasForeignKey("MembershipId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Api.Models.User", "User")
-                        .WithMany("Subscriptions")
+                        .WithMany("Plans")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Membership");
-
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Api.Models.UserContentProgress", b =>
-                {
-                    b.HasOne("Api.Models.Content", "Content")
-                        .WithMany()
-                        .HasForeignKey("ContentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Api.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Content");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Api.Models.Content", b =>
-                {
-                    b.Navigation("Memberships");
                 });
 
             modelBuilder.Entity("Api.Models.ContentType", b =>
@@ -326,18 +261,11 @@ namespace app.Migrations
                     b.Navigation("Contents");
                 });
 
-            modelBuilder.Entity("Api.Models.Membership", b =>
-                {
-                    b.Navigation("Contents");
-
-                    b.Navigation("Subscriptions");
-                });
-
             modelBuilder.Entity("Api.Models.User", b =>
                 {
                     b.Navigation("Contents");
 
-                    b.Navigation("Subscriptions");
+                    b.Navigation("Plans");
                 });
 #pragma warning restore 612, 618
         }

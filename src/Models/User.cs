@@ -2,11 +2,11 @@ namespace Api.Models;
 
 public class User
 {
-    public int Id { get; set; }
-    public required string Name { get; set; }
-    public required string Email { get; set; }
-    public required string PasswordHash { get; set; }
-    public required string Slug { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Name { get; set; }
+    public string Email { get; set; }
+    public string PasswordHash { get; set; }
+    public string Slug { get; set; }
     public bool IsActive { get; set; } = true;
     public DateTime? LastLoginAt { get; set; }
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;

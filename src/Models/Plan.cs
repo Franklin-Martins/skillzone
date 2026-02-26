@@ -5,7 +5,7 @@ public class Plan
     public int Id { get; set; }
 
     public User User { get; set; } = null!;
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
 
     public bool IsOwner { get; set; }
     public required string Name { get; set; }

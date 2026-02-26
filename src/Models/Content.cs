@@ -11,7 +11,7 @@ public class Content
     public bool IsOwner { get; set; }
     
     public User User { get; set; } = null!;
-    public int UserId { get; set; }
+    public Guid UserId { get; set; }
     
     public ContentType ContentType { get; set; } = null!;
     public int ContentTypeId { get; set; }

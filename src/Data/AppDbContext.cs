@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Api.Models;
-using app.Migrations;
 
 namespace Api.Data;
 
