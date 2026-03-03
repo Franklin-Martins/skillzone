@@ -28,7 +28,8 @@ public class UsersController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAsync(
         [FromQuery] int page = 0,
-        [FromQuery] int pageSize = 25)
+        [FromQuery] int pageSize = 25
+    )
     {
         if (page < 0)
             page = 0;
