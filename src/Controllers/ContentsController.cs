@@ -4,10 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Api.Data;
 using Api.Models;
 using Api.ViewModels;
-using Api.Utils;
 using Api.Extensions;
 using Api.ViewModels.Contents;
-using Api.ViewModels.Users;
 
 namespace Api.Controllers;
 
@@ -15,7 +13,6 @@ namespace Api.Controllers;
 [Route("api/[controller]")]
 public class ContentsController : ControllerBase
 {
-
     private readonly AppDbContext _context;
 
     public ContentsController(
