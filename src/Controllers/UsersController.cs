@@ -13,17 +13,10 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController : ControllerBase
+public class UsersController(AppDbContext context) : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly AppDbContext _context = context;
     private readonly IPasswordHasher<User> _passwordHasher = new PasswordHasher<User>();
-
-    public UsersController(
-        AppDbContext context
-        )
-    {
-        _context = context;
-    }
 
     [HttpGet]
     public async Task<IActionResult> GetAsync(

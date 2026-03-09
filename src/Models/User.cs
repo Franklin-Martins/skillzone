@@ -13,4 +13,5 @@ public class User
 
     public IList<Plan> Plans { get; private set; } = new List<Plan>();
     public IList<Content> Contents { get; private set; } = new List<Content>();
+    public IList<Role> Roles { get; set; }
 }

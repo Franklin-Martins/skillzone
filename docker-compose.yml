@@ -14,6 +14,7 @@ services:
       - db
     environment:
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=skillzone;Username=postgres;Password=postgres
+      - JwtKey=gZ4j!7daO9O5pX@j@-#0)WU2E)0V0[3PTMB
 
   db:
     container_name: skillzone-database

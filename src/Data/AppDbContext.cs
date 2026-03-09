@@ -13,4 +13,5 @@ public class AppDbContext : DbContext
     public DbSet<ContentType> ContentTypes { get; set; }
     public DbSet<Plan> Plans { get; set; }
     public DbSet<Payment> Payments { get; set; }
+    public DbSet<Role> Roles { get; set; }
 }
