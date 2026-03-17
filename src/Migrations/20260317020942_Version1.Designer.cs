@@ -3,6 +3,7 @@ using System;
 using Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace app.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260317020942_Version1")]
+    partial class Version1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -159,7 +162,7 @@ namespace app.Migrations
                     b.Property<int>("Price")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Status")
+                    b.Property<int?>("Status")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -173,30 +176,6 @@ namespace app.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Plans");
-                });
-
-            modelBuilder.Entity("Api.Models.PlanStatusHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("PlanId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlanId");
-
-                    b.ToTable("PlanStatusHistory");
                 });
 
             modelBuilder.Entity("Api.Models.Role", b =>
@@ -296,17 +275,6 @@ namespace app.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Api.Models.PlanStatusHistory", b =>
-                {
-                    b.HasOne("Api.Models.Plan", "Plan")
-                        .WithMany("StatusHistory")
-                        .HasForeignKey("PlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Plan");
-                });
-
             modelBuilder.Entity("Api.Models.Role", b =>
                 {
                     b.HasOne("Api.Models.User", null)
@@ -317,11 +285,6 @@ namespace app.Migrations
             modelBuilder.Entity("Api.Models.ContentType", b =>
                 {
                     b.Navigation("Contents");
-                });
-
-            modelBuilder.Entity("Api.Models.Plan", b =>
-                {
-                    b.Navigation("StatusHistory");
                 });
 
             modelBuilder.Entity("Api.Models.User", b =>

@@ -12,7 +12,6 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "admin")]
 public class RolesController(AppDbContext context) : ControllerBase
 {
     private readonly AppDbContext _context = context;
