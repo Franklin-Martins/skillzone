@@ -14,4 +14,5 @@ public class AppDbContext : DbContext
     public DbSet<Plan> Plans { get; set; }
     public DbSet<Payment> Payments { get; set; }
     public DbSet<Role> Roles { get; set; }
+    public DbSet<PlanStatusHistory> PlanStatusHistories { get; set; }
 }
