@@ -15,6 +15,8 @@ public class PlansController(AppDbContext context) : ControllerBase
 {
     private readonly AppDbContext _context = context;
 
+    [Authorize]
+    [HttpGet]
     public async Task<IActionResult> GetAsync(
         [FromQuery] int page = 0,
         [FromQuery] int pageSize = 25
@@ -50,15 +52,11 @@ public class PlansController(AppDbContext context) : ControllerBase
             {
                 Id = x.Id,
                 UserId = x.UserId,
-                UserName = x.User.Name,
-                IsOwner = x.IsOwner,
+                Username = x.User.Name,
                 Name = x.Name,
                 Price = x.Price,
                 Description = x.Description,
                 DurationInMonths = x.DurationInMonths,
-                DueDate = x.DueDate,
-                Status = (int)x.Status,
-                ExpiresAt = x.ExpiresAt,
                 UpdatedAt = x.UpdatedAt,
                 CreatedAt = x.CreatedAt
             })
@@ -70,39 +68,40 @@ public class PlansController(AppDbContext context) : ControllerBase
         return Ok(new ResultViewModel<DetailPlanViewModel>(plan, null));
     }
 
+    [Authorize]
     [HttpPost]
-    public async Task<IActionResult> PostAsync(
-        [FromBody] CreatePlanViewModel model
-    )
+    public async Task<IActionResult> PostAsync([FromBody] CreatePlanViewModel model)
     {
         if (!ModelState.IsValid)
             return BadRequest(new ResultViewModel<List<string>>(ModelState.GetErrors()));
 
-        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == model.UserId);
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrEmpty(userIdClaim))
+            return Unauthorized(new ResultViewModel<string>("User not authenticated"));
+
+        var userId = Guid.Parse(userIdClaim);
+
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
 
         if (user == null)
             return NotFound(new ResultViewModel<string>("User not found"));
 
         var plan = new Plan
         {
-            UserId = model.UserId,
-            IsOwner = model.IsOwner,
+            UserId = userId,
+            IsOwner = true,
             Name = model.Name,
             Price = model.Price,
             Description = model.Description,
-            DurationInMonths = model.DurationInMonths,
-            DueDate = model.DueDate,
-            Status = model.Status ?? EPlanStatus.Pending,
-            ExpiresAt = model.ExpiresAt
+            Status = EPlanStatus.Pending,
+            DurationInMonths = model.DurationInMonths
         };
 
         await _context.Plans.AddAsync(plan);
         await _context.SaveChangesAsync();
 
-        return Created(
-            $"api/plans/{plan.Id}",
-            new ResultViewModel<Plan>(plan, null)
-        );
+        return Created($"api/plans/{plan.Id}", new ResultViewModel<Plan>(plan, null));
     }
 
     [HttpDelete("{id:int}")]

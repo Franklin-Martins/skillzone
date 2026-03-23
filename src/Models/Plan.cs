@@ -17,16 +17,14 @@ public class Plan
 
     public string Description { get; set; }
 
-    public int? DurationInMonths { get; set; }
+    public int DurationInMonths { get; set; }
 
     public DateTime? DueDate { get; set; }
 
     public EPlanStatus Status { get; set; } = EPlanStatus.Pending;
 
-    public ICollection<PlanStatusHistory> StatusHistory { get; set; }
+    public IEnumerable<PlanStatusHistory> StatusHistory { get; set; }
         = new List<PlanStatusHistory>();
-
-    public DateTime? ExpiresAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
 

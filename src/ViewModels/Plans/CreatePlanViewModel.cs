@@ -9,23 +9,17 @@ public class CreatePlanViewModel
     [Required]
     public Guid UserId { get; set; }
 
-    public bool? IsOwner { get; set; }
-
     [Required]
-    [MaxLength(120)]
     public string Name { get; set; }
 
     [Required]
     public int Price { get; set; }
 
-    [MaxLength(500)]
+    [Required]
     public string Description { get; set; }
 
-    public int? DurationInMonths { get; set; }
-
-    public DateTime? DueDate { get; set; }
-
-    public EPlanStatus? Status { get; set; }
+    [Required]
+    public int DurationInMonths { get; set; }
 
     public DateTime? ExpiresAt { get; set; }
 }

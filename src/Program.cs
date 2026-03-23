@@ -56,8 +56,8 @@ void ConfigureAuthentication(WebApplicationBuilder builder)
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuer = true,
-                ValidateAudience = true
+                ValidateIssuer = false,
+                ValidateAudience = false
             };
         });
 
