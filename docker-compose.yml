@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   api:
     container_name: skillzone-api
@@ -10,10 +8,13 @@ services:
       - skillzone-network
     volumes:
       - ./src:/app
+      - skillzone-obj:/app/obj
+      - skillzone-bin:/app/bin
     depends_on:
       - db
     environment:
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=skillzone;Username=postgres;Password=postgres
+      - JwtKey=gZ4j!7daO9O5pX@j@-#0)WU2E)0V0[3PTMB
 
   db:
     container_name: skillzone-database
@@ -25,7 +26,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
   adminer:
     container_name: skillzone-adminer
@@ -33,8 +34,12 @@ services:
     networks:
       - skillzone-network
     ports:
-      - 8080:8080
+      - "8080:8080"
 
 networks:
   skillzone-network:
     driver: bridge
+
+volumes:
+  skillzone-obj:
+  skillzone-bin:
