@@ -1,10 +1,11 @@
 ﻿using Api.Models;
+using Api.Models.Enums;
 
 namespace Api.ViewModels.Payments;
 
 public class DetailPaymentViewModel
 {
-    public int Id { get; set; }
+    public int Id { get; set;  }
 
     public int PlanId { get; set; }
 
