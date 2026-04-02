@@ -2,6 +2,7 @@
 using Api.Data;
 using Api.Extensions;
 using Api.Models;
+using Api.Models.Enums;
 using Api.ViewModels;
 using Api.ViewModels.Payments;
 using Microsoft.AspNetCore.Mvc;
